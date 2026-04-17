@@ -1,0 +1,72 @@
+/* App.css */
+
+/* تصفير الإعدادات الأساسية */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+/* تأثير الزجاج (Glassmorphism) */
+.glass-card {
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* النص المتدرج باللون الذهبي */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+}
+
+/* تنسيق الأزرار الذهبية */
+button.bg-yellow-500 {
+  background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+  color: #000;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+button.bg-yellow-500:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(234, 179, 8, 0.3);
+}
+
+/* تحسين شكل القوائم المنسدلة */
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23eab308'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 0.5rem center;
+  background-size: 1rem;
+  padding-left: 2rem !important;
+}
+
+/* حركة الماوس على البطاقات */
+.glass-card:hover {
+  border-color: rgba(234, 179, 8, 0.3);
+  background: rgba(24, 24, 24, 0.8);
+}
+
+/* اتجاه النص العربي */
+[dir="rtl"] {
+  text-align: right;
+}
+
+/* تنسيق شريط النقل السفلي */
+nav.glass-card {
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+}
+ض

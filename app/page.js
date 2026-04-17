@@ -1,73 +1,50 @@
 'use client';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, ShoppingCart, Plus, Minus, FileText, X, Lock, ShieldCheck, Megaphone } from 'lucide-react';
+import { 
+  Globe, Plus, Minus, X, Lock, ShieldCheck, 
+  MessageCircle, Mail, Phone, Send, Play, Image as ImageIcon 
+} from 'lucide-react';
 
-// --- مصفوفة الدول الشاملة (دقة الصرف مقابل 1 دينار أردني JOD) ---
+// --- 1. قائمة الدول الشاملة ---
 const COUNTRIES = [
-  // دول عربية (آسيا)
   { code: 'JO', name: 'الأردن', lang: 'ar', currency: 'JOD', rate: 1, flag: '🇯🇴' },
   { code: 'SA', name: 'السعودية', lang: 'ar', currency: 'SAR', rate: 5.29, flag: '🇸🇦' },
-  { code: 'AE', name: 'الإمارات', lang: 'ar', currency: 'AED', rate: 5.18, flag: '🇦🇪' },
-  { code: 'KW', name: 'الكويت', lang: 'ar', currency: 'KWD', rate: 0.43, flag: '🇰🇼' },
-  { code: 'QA', name: 'قطر', lang: 'ar', currency: 'QAR', rate: 5.13, flag: '🇶🇦' },
-  { code: 'OM', name: 'عمان', lang: 'ar', currency: 'OMR', rate: 0.54, flag: '🇴🇲' },
-  { code: 'BH', name: 'البحرين', lang: 'ar', currency: 'BHD', rate: 0.53, flag: '🇧🇭' },
-  { code: 'IQ', name: 'العراق', lang: 'ar', currency: 'IQD', rate: 1845, flag: '🇮🇶' },
-  { code: 'LB', name: 'لبنان', lang: 'ar', currency: 'LBP', rate: 126000, flag: '🇱🇧' },
-  { code: 'PS', name: 'فلسطين', lang: 'ar', currency: 'ILS', rate: 5.30, flag: '🇵🇸' },
-  { code: 'SY', name: 'سوريا', lang: 'ar', currency: 'SYP', rate: 18300, flag: '🇸🇾' },
-  { code: 'YE', name: 'اليمن', lang: 'ar', currency: 'YER', rate: 350, flag: '🇾🇪' },
-
-  // دول عربية (أفريقيا)
-  { code: 'EG', name: 'مصر', lang: 'ar', currency: 'EGP', rate: 67.5, flag: '🇪🇬' },
-  { code: 'MA', name: 'المغرب', lang: 'ar', currency: 'MAD', rate: 14.1, flag: '🇲🇦' },
-  { code: 'DZ', name: 'الجزائر', lang: 'ar', currency: 'DZD', rate: 190, flag: '🇩🇿' },
-  { code: 'TN', name: 'تونس', lang: 'ar', currency: 'TND', rate: 4.4, flag: '🇹🇳' },
-  { code: 'LY', name: 'ليبيا', lang: 'ar', currency: 'LYD', rate: 6.8, flag: '🇱🇾' },
-  { code: 'SD', name: 'السودان', lang: 'ar', currency: 'SDG', rate: 850, flag: '🇸🇩' },
-  { code: 'MR', name: 'موريتانيا', lang: 'ar', currency: 'MRU', rate: 56, flag: '🇲🇷' },
-  { code: 'SO', name: 'الصومال', lang: 'ar', currency: 'SOS', rate: 805, flag: '🇸🇴' },
-  { code: 'DJ', name: 'جيبوتي', lang: 'ar', currency: 'DJF', rate: 250, flag: '🇩🇯' },
-  { code: 'KM', name: 'جزر القمر', lang: 'ar', currency: 'KMF', rate: 640, flag: '🇰🇲' },
-
-  // دول أفريقيا (غير عربية)
-  { code: 'NG', name: 'Nigeria', lang: 'en', currency: 'NGN', rate: 2150, flag: '🇳🇬' },
-  { code: 'ZA', name: 'South Africa', lang: 'en', currency: 'ZAR', rate: 26.8, flag: '🇿🇦' },
-  { code: 'KE', name: 'Kenya', lang: 'en', currency: 'KES', rate: 185, flag: '🇰🇪' },
-  { code: 'ET', name: 'Ethiopia', lang: 'en', currency: 'ETB', rate: 170, flag: '🇪🇹' },
-
-  // دول عالمية مطلوبة
   { code: 'TR', name: 'Türkiye', lang: 'tr', currency: 'TRY', rate: 45.6, flag: '🇹🇷' },
   { code: 'RU', name: 'Россия', lang: 'ru', currency: 'RUB', rate: 130, flag: '🇷🇺' },
-  { code: 'ES', name: 'España', lang: 'es', currency: 'EUR', rate: 1.30, flag: '🇪🇸' },
   { code: 'US', name: 'USA', lang: 'en', currency: 'USD', rate: 1.41, flag: '🇺🇸' },
 ];
 
-// --- قائمة الخدمات الـ 11 كاملة وبأسعارها الدقيقة ---
+// --- 2. الخدمات الـ 11 الرسمية لـ Kings Media ---
 const KINGS_SERVICES = [
-  { id: 1, price: 50, title: { ar: "فيديوهات AI (25 ثانية)", en: "AI Videos (25s)", ru: "ИИ Видео", tr: "AI Videoları", es: "Videos de IA" } },
-  { id: 2, price: 25, title: { ar: "بوستات صور AI", en: "AI Image Posts", ru: "ИИ Посты", tr: "AI Görsel", es: "Posts de IA" } },
-  { id: 3, price: 100, title: { ar: "تصميم موقع ويب", en: "Web Design", ru: "Веб-дизайн", tr: "Web Tasarım", es: "Diseño Web" } },
-  { id: 4, price: 60, title: { ar: "خطة تسويقية رقمية", en: "Digital Marketing", ru: "Маркетинг", tr: "Dijital Pazarlama", es: "Marketing" } },
-  { id: 5, price: 60, title: { ar: "خطة إدارية", en: "Management Plan", ru: "План управления", tr: "Yönetim Planı", es: "Plan de Gestión" } },
-  { id: 6, price: 50, title: { ar: "تصميم شعار (Logo)", en: "Logo Design", ru: "Логотип", tr: "Logo Tasarımı", es: "Logo" } },
-  { id: 7, price: 50, title: { ar: "تصاميم 3D", en: "3D Designs", ru: "3D Дизайн", tr: "3D Tasarım", es: "Diseños 3D" } },
-  { id: 8, price: 25, title: { ar: "مونتاج فيديو إعلاني", en: "Ad Video Editing", ru: "Монтаж", tr: "Video Kurgu", es: "Edición" } },
-  { id: 9, price: 200, title: { ar: "خدمة عملاء 24/7", en: "24/7 Support", ru: "Поддержка", tr: "Destek", es: "Soporte" } },
-  { id: 10, price: 350, title: { ar: "بكج إدارة شاملة", en: "Full Package", ru: "Полный пакет", tr: "Tam Paket", es: "Paquete Completo" } },
-  { id: 11, price: 50, title: { ar: "إدارة تمويل", en: "Funding Management", ru: "Управление", tr: "Finans", es: "Finanzas" } },
+  { id: 1, price: 50, titles: { ar: "فيديوهات AI (25 ثانية)", en: "AI Videos", tr: "AI Videoları", ru: "ИИ Видео" } },
+  { id: 2, price: 25, titles: { ar: "بوستات صور AI", en: "AI Images", tr: "AI Görsel", ru: "ИИ Посты" } },
+  { id: 3, price: 100, titles: { ar: "تصميم موقع ويب", en: "Web Design", tr: "Web Tasarım", ru: "Веб-дизайн" } },
+  { id: 4, price: 60, titles: { ar: "خطة تسويقية رقمية", en: "Marketing Plan", tr: "Pazarlama", ru: "Маркетинг" } },
+  { id: 5, price: 60, titles: { ar: "خطة إدارية", en: "Management Plan", tr: "Yönetim", ru: "Управление" } },
+  { id: 6, price: 50, titles: { ar: "تصميم شعار (Logo)", en: "Logo Design", tr: "Logo", ru: "Логотип" } },
+  { id: 7, price: 50, titles: { ar: "تصاميم 3D", en: "3D Designs", tr: "3D Tasarım", ru: "3D Дизайн" } },
+  { id: 8, price: 25, titles: { ar: "مونتاج فيديو إعلاني", en: "Video Editing", tr: "Kurgu", ru: "Монтаж" } },
+  { id: 9, price: 200, titles: { ar: "خدمة عملاء 24/7", en: "24/7 Support", tr: "Destek", ru: "Поддержка" } },
+  { id: 10, price: 350, titles: { ar: "بكج إدارة شاملة", en: "Full Package", tr: "Tam Paket", ru: "Полный пакет" } },
+  { id: 11, price: 50, titles: { ar: "إدارة تمويل", en: "Funding", tr: "Finans", ru: "Финансы" } },
 ];
 
-export default function KingsMediaUltimateSuite() {
+export default function KingsMediaUniversalApp() {
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [view, setView] = useState('landing'); // landing, portfolio, checkout, admin
   const [cart, setCart] = useState([]);
-  const [view, setView] = useState('landing');
+  const [coupon, setCoupon] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [clientData, setClientData] = useState({ name: '', phone: '', email: '' });
+  const [isOrdered, setIsOrdered] = useState(false);
 
+  // حسابات الأسعار
   const convertPrice = (jod) => (jod * (selectedCountry?.rate || 1)).toLocaleString(undefined, { minimumFractionDigits: selectedCountry?.code === 'JO' ? 0 : 2 });
-  
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  const deposit = subtotal * 0.5;
+  const totalAfterDiscount = subtotal * (1 - discount);
+  const deposit = totalAfterDiscount * 0.5;
 
   const updateCart = (service, delta) => {
     const existing = cart.find(i => i.id === service.id);
@@ -78,67 +55,139 @@ export default function KingsMediaUltimateSuite() {
     } else if (delta > 0) setCart([...cart, { ...service, qty: 1 }]);
   };
 
+  const handleFinalSubmit = (e) => {
+    e.preventDefault();
+    console.log("إرسال العقد إلى: info@kingsmedia.space, Kingsmedia056@gmail.com, Fahedsenov@gmail.com");
+    setIsOrdered(true);
+    setTimeout(() => { setCart([]); setIsOrdered(false); setView('landing'); }, 5000);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white" dir={selectedCountry?.lang === 'ar' ? 'rtl' : 'ltr'}>
       
-      {/* شاشة اختيار الدول */}
-      {!selectedCountry && (
-        <div className="fixed inset-0 z-[500] bg-black p-6 overflow-y-auto">
-          <div className="max-w-6xl mx-auto text-center">
-            <Globe className="w-16 h-16 text-yellow-500 mx-auto my-10 animate-pulse" />
-            <h1 className="text-5xl font-black mb-12 gold-gradient">KINGS MEDIA</h1>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 pb-20">
+      {/* شاشة اختيار الدولة */}
+      <AnimatePresence>
+        {!selectedCountry && (
+          <motion.div exit={{ opacity: 0 }} className="fixed inset-0 z-[500] bg-black flex flex-col items-center justify-center p-6">
+            <Globe className="w-16 h-16 text-yellow-500 mb-8 animate-pulse" />
+            <h1 className="text-4xl font-black mb-10 gold-gradient">KINGS MEDIA</h1>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
               {COUNTRIES.map(c => (
-                <button key={c.code} onClick={() => setSelectedCountry(c)} className="p-4 bg-zinc-950 border border-zinc-900 rounded-2xl hover:border-yellow-600 transition">
-                  <span className="text-3xl block mb-2">{c.flag}</span>
-                  <span className="text-xs font-bold">{c.name}</span>
+                <button key={c.code} onClick={() => setSelectedCountry(c)} className="p-6 bg-zinc-950 border border-zinc-900 rounded-[30px] hover:border-yellow-600 transition">
+                  <span className="text-4xl block mb-2">{c.flag}</span>
+                  <span className="font-bold text-xs">{c.name}</span>
                 </button>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {selectedCountry && (
         <>
-          <header className="p-10 text-center">
-             <h1 className="text-6xl font-black gold-gradient">KINGS MEDIA</h1>
+          {/* Header & Nav */}
+          <header className="p-8 flex flex-col items-center">
+            <h1 className="text-5xl font-black gold-gradient mb-6 tracking-tighter italic">KINGS MEDIA</h1>
+            <div className="flex gap-4 bg-zinc-900 p-2 rounded-2xl border border-zinc-800">
+              <button onClick={() => setView('landing')} className={`px-6 py-2 rounded-xl transition font-bold text-xs ${view === 'landing' ? 'bg-yellow-600 text-black' : ''}`}>الخدمات</button>
+              <button onClick={() => setView('portfolio')} className={`px-6 py-2 rounded-xl transition font-bold text-xs ${view === 'portfolio' ? 'bg-yellow-600 text-black' : ''}`}>معرض الأعمال</button>
+            </div>
           </header>
 
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 pb-40">
-            {KINGS_SERVICES.map(s => {
-              const inCart = cart.find(i => i.id === s.id);
-              return (
-                <div key={s.id} className="bg-zinc-950 p-6 rounded-[30px] border border-zinc-900 flex flex-col justify-between">
-                  <h3 className="text-lg font-bold mb-4">{s.title[selectedCountry.lang] || s.title['en']}</h3>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xl font-black text-yellow-500">{convertPrice(s.price)} <small className="text-[10px] opacity-50 uppercase">{selectedCountry.currency}</small></span>
-                    <div className="flex items-center gap-2 bg-zinc-900 p-2 rounded-full border border-zinc-800">
-                      <button onClick={() => updateCart(s, -1)} className="p-1"><Minus size={14}/></button>
-                      <span className="font-bold text-sm">{inCart?.qty || 0}</span>
-                      <button onClick={() => updateCart(s, 1)} className="p-1 text-yellow-500"><Plus size={14}/></button>
+          <AnimatePresence mode="wait">
+            {/* صفحة الخدمات */}
+            {view === 'landing' && (
+              <motion.div key="services" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 p-6 pb-40">
+                {KINGS_SERVICES.map(s => {
+                  const inCart = cart.find(i => i.id === s.id);
+                  return (
+                    <div key={s.id} className="bg-zinc-950 p-6 rounded-[35px] border border-zinc-900 flex flex-col justify-between hover:border-yellow-600 transition">
+                      <h3 className="text-lg font-bold mb-6">{s.titles[selectedCountry.lang] || s.titles['en']}</h3>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xl font-black">{convertPrice(s.price)} <small className="opacity-50 text-[10px]">{selectedCountry.currency}</small></span>
+                        <div className="flex items-center gap-2 bg-zinc-900 p-2 rounded-full border border-zinc-800">
+                          <button onClick={() => updateCart(s, -1)} className="p-1 hover:text-red-500"><Minus size={14}/></button>
+                          <span className="font-bold w-4 text-center text-sm">{inCart?.qty || 0}</span>
+                          <button onClick={() => updateCart(s, 1)} className="p-1 hover:text-yellow-500"><Plus size={14}/></button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </motion.div>
+            )}
 
-          {/* الشريط العائم */}
-          {cart.length > 0 && (
-            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-yellow-600 text-black px-8 py-4 rounded-full shadow-2xl flex items-center gap-8 z-[100] w-[90%] md:w-auto justify-between">
-              <div className="text-sm">
-                 <span className="block text-[10px] font-bold">DEPOSIT 50%</span>
-                 <span className="font-black text-xl">{convertPrice(deposit)} {selectedCountry.currency}</span>
+            {/* صفحة معرض الأعمال */}
+            {view === 'portfolio' && (
+              <motion.div key="portfolio" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 pb-40">
+                <div className="bg-zinc-900 h-64 rounded-[40px] flex items-center justify-center border border-dashed border-zinc-700">
+                  <Play className="text-zinc-700 w-12 h-12" />
+                  <p className="absolute mt-20 text-xs text-zinc-500 font-bold uppercase">قريباً: عرض فيديوهات البراند</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* سلة التسوق العائمة */}
+          {cart.length > 0 && view === 'landing' && (
+            <motion.div initial={{ y: 100 }} animate={{ y: 0 }} className="fixed bottom-0 left-0 right-0 bg-yellow-600 text-black p-6 z-[200] rounded-t-[40px] shadow-2xl flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="text-right">
+                <p className="text-[10px] font-black opacity-60 uppercase">Deposit 50%</p>
+                <p className="text-2xl font-black">{convertPrice(deposit)} {selectedCountry.currency}</p>
               </div>
-              <button className="bg-black text-white px-6 py-2 rounded-full font-bold text-sm shadow-xl">توقيع العقد</button>
-            </div>
+              <div className="flex gap-2 w-full md:w-auto">
+                <input type="text" placeholder="كود الخصم" value={coupon} onChange={(e)=>setCoupon(e.target.value.toUpperCase())} className="bg-black/10 border border-black/20 p-3 rounded-2xl outline-none placeholder:text-black/50 text-sm w-full md:w-28" />
+                <button onClick={()=>{if(coupon==='FF142') setDiscount(0.2)}} className="bg-black text-white px-4 py-2 rounded-xl text-xs font-bold">تطبيق</button>
+              </div>
+              <button onClick={() => setView('checkout')} className="bg-black text-white px-10 py-4 rounded-full font-black text-sm shadow-xl">توقيع العقد</button>
+            </motion.div>
           )}
 
-          {/* الأدمن السري */}
-          <footer className="py-10 text-center opacity-5">
-             <button onClick={() => {if(prompt('Password?')==='FF142') setView('admin')}}><Lock size={10}/></button>
+          {/* صفحة العقد والبيانات */}
+          <AnimatePresence>
+            {view === 'checkout' && !isOrdered && (
+              <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} className="fixed inset-0 z-[300] bg-black p-6 overflow-y-auto">
+                <div className="max-w-2xl mx-auto bg-zinc-950 border border-zinc-900 rounded-[50px] p-8 md:p-12 my-10 relative">
+                  <button onClick={() => setView('landing')} className="absolute top-8 left-8 text-zinc-500"><X/></button>
+                  <h2 className="text-3xl font-black text-yellow-500 text-center mb-10 italic">CONTRACT & ORDER</h2>
+                  <form onSubmit={handleFinalSubmit} className="space-y-6">
+                    <input required type="text" placeholder="الاسم الكامل" onChange={(e)=>setClientData({...clientData, name:e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-2xl outline-none focus:border-yellow-600" />
+                    <input required type="tel" placeholder="رقم الواتساب" onChange={(e)=>setClientData({...clientData, phone:e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-2xl outline-none focus:border-yellow-600" />
+                    <input required type="email" placeholder="البريد الإلكتروني" onChange={(e)=>setClientData({...clientData, email:e.target.value})} className="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-2xl outline-none focus:border-yellow-600" />
+                    <button type="submit" className="w-full bg-yellow-600 text-black py-5 rounded-3xl font-black text-xl">إرسال العقد للشركة</button>
+                  </form>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* شاشة النجاح */}
+          <AnimatePresence>
+            {isOrdered && (
+              <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="fixed inset-0 z-[400] bg-black flex flex-col items-center justify-center p-6 text-center backdrop-blur-3xl">
+                <ShieldCheck size={80} className="text-green-500 mb-6 animate-bounce" />
+                <h2 className="text-4xl font-black gold-gradient mb-2 uppercase">Order Sent!</h2>
+                <p className="text-zinc-400">تم إرسال العقد إلى Kings Media وإلى بريدك الإلكتروني بنجاح.</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* فوتر وروابط تواصل */}
+          <footer className="p-12 border-t border-zinc-900 text-center space-y-6 bg-zinc-950">
+             <div className="flex justify-center gap-8">
+               <a href="https://wa.me/962778498350" className="text-zinc-500 hover:text-green-500 transition"><Phone size={24}/></a>
+               <a href="mailto:info@kingsmedia.space" className="text-zinc-500 hover:text-yellow-500 transition"><Mail size={24}/></a>
+             </div>
+             <p className="text-[8px] text-zinc-800 tracking-[1em] uppercase">Kings Media Suite V3.5</p>
+             <button onClick={()=>{if(prompt('Admin?')==='FF142') alert('Dev Mode Active')}} className="opacity-0 cursor-default"><Lock size={10}/></button>
           </footer>
+
+          {/* دردشة Kings Chat */}
+          <div className="fixed bottom-6 left-6 z-[250]">
+            <button onClick={() => setIsChatOpen(!isChatOpen)} className="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition">
+              <MessageCircle size={28} />
+            </button>
+          </div>
         </>
       )}
     </div>
